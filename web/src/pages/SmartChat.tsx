@@ -33,29 +33,40 @@ const Chat = () => {
     setIsTyping(true);
 
     try {
-      // 模拟调用 AI 接口（你可以替换为 OpenAI 或 Memos 后端 API）
-      // 如果 Memos 后端已配置 AI，可以调用类似 /api/v1/ai/chat 的接口
-      const response = await fetch("https://ark.cn-beijing.volces.com/api/v3/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer 7c176ce0-60c7-41c2-b223-0499eca8c6fa`,
-        },
-        body: JSON.stringify({
-          model: "doubao-1-5-pro-32k-250115",
-          messages: [...messages, userMsg],
-        }),
-      });
+        const response = await fetch("/api/v1/ai/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: input }),
+        });
 
-      const data = await response.json();
-      const aiContent = data.choices[0].message.content;
+        if (!response.body) return;
 
-      setMessages((prev) => [...prev, { role: "assistant", content: aiContent }]);
-    } catch (error) {
-      console.error("AI 响应错误:", error);
-    } finally {
-      setIsTyping(false);
-    }
+        // 1. 获取读取器
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedContent = "";
+
+        // 2. 循环读取数据块
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break; // 读取完成
+
+          // 3. 解码并追加内容
+          const chunk = decoder.decode(value, { stream: true });
+          accumulatedContent += chunk;
+
+          // 4. 实时更新界面上最后一条消息的内容
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].content = accumulatedContent;
+            return newMessages;
+          });
+        }
+      } catch (error) {
+        console.error("AI 响应错误:", error);
+      } finally {
+        setIsTyping(false);
+      }
   };
 
   return (

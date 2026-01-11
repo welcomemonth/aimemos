@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon, ToolCaseIcon, AppleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon, ToolCaseIcon, BotMessageSquare } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -50,7 +50,7 @@ const Navigation = (props: Props) => {
     id: "header-chat",
     path: Routes.CHAT,
     title: t("common.chat"),
-    icon: <AppleIcon className="w-6 h-auto shrink-0" />,
+    icon: <BotMessageSquare className="w-6 h-auto shrink-0" />,
   };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",

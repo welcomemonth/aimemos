@@ -122,6 +122,10 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup.Use(middleware.CORS())
 	handler := echo.WrapHandler(gwMux)
 
+	// --- 重点：在这里添加你的 AI 路由 ---
+	// 我们在通配符路由之前注册，这样 Echo 会优先匹配这个具体的路径
+	echoServer.POST("/api/v1/ai/chat", s.CreateAIChat)
+
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
 

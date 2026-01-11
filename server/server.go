@@ -39,13 +39,17 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Profile: profile,
 	}
 
-	echoServer := echo.New()
-	echoServer.Debug = true
-	echoServer.HideBanner = true
+	echoServer := echo.New()     // 创建一个新的 Web 引擎
+	echoServer.Debug = true      // 开启调试模式
+	echoServer.HideBanner = true // 启动时不显示大大的 Logo
 	echoServer.HidePort = true
-	echoServer.Use(middleware.Recover())
+	echoServer.Use(middleware.Recover()) // 即使程序出错了也不要直接崩溃，而是记录日志并恢复
 	s.echoServer = echoServer
 
+	/*
+		每个 Memos 实例需要一个“暗号”（Secret Key）来生成登录令牌。如果密钥变了，所有人的登录状态都会失效。
+		所以如果是正式环境（prod），要从数据库里读，保证稳定。
+	*/
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get instance basic setting")
@@ -57,12 +61,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.Secret = secret
 
-	// Register healthz endpoint.
+	// 1. 健康检查：用来告诉监控系统“我还活着”
 	echoServer.GET("/healthz", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
 	// Serve frontend static files.
+	// 2. 网页前端：显示你看到的 Memos 界面
 	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
 
 	rootGroup := echoServer.Group("")
@@ -90,7 +95,7 @@ func (s *Server) Start(ctx context.Context) error {
 		address = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
 		network = "tcp"
 	} else {
-		address = s.Profile.UNIXSock
+		address = s.Profile.UNIXSock //使用 Unix Domain Socket (高级用法，通常用于本机通信)
 		network = "unix"
 	}
 	listener, err := net.Listen(network, address)
