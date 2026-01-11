@@ -4,11 +4,26 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
+/**
+ * 从资源 name 中提取用户 ID
+ *
+ * 示例：
+ *   "users/123" -> "123"
+ *
+ * @param name 用户资源名称
+ * @returns 用户 ID，如果无法解析则返回空字符串
+ */
 const extractUserIdFromName = (name: string): string => {
   const match = name.match(/users\/(\d+)/);
   return match ? match[1] : "";
 };
 
+/**
+ * 将 Visibility 枚举转换为后端过滤语法所需的字符串
+ *
+ * @param visibility 可见性枚举值
+ * @returns 对应的可见性字符串
+ */
 const getVisibilityName = (visibility: Visibility): string => {
   switch (visibility) {
     case Visibility.PUBLIC:
@@ -22,6 +37,15 @@ const getVisibilityName = (visibility: Visibility): string => {
   }
 };
 
+/**
+ * 从 shortcut 的 name 中提取 shortcut ID
+ *
+ * 示例：
+ *   "users/1/shortcuts/10" -> "10"
+ *
+ * @param name shortcut 资源名称
+ * @returns shortcut ID，如果格式不符合预期则返回空字符串
+ */
 const getShortcutId = (name: string): string => {
   const parts = name.split("/");
   return parts.length === 4 ? parts[3] : "";
@@ -34,20 +58,37 @@ export interface UseMemoFiltersOptions {
   visibilities?: Visibility[];
 }
 
+/**
+ * 根据当前上下文状态和传入参数，构建 memo 查询所需的过滤表达式
+ *
+ * @param options 过滤配置参数
+ * @returns 过滤字符串；若无任何条件则返回 undefined
+ */
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeShortcuts = false, includePinned = false, visibilities } = options;
-
+ // 当前登录用户下的快捷筛选列表
   const { shortcuts } = useAuth();
+  // 当前激活的过滤条件和选中的 shortcut
   const { filters, shortcut: currentShortcut } = useMemoFilterContext();
   const { memoRelatedSetting } = useInstance();
 
-  // Get selected shortcut if needed
+    /**
+   * 根据当前选中的 shortcut ID，找到对应的 shortcut 对象
+   *
+   * 仅在启用 includeShortcuts 时生效
+   */
   const selectedShortcut = useMemo(() => {
     if (!includeShortcuts) return undefined;
     return shortcuts.find((shortcut) => getShortcutId(shortcut.name) === currentShortcut);
   }, [includeShortcuts, currentShortcut, shortcuts]);
 
-  // Build filter
+    /**
+   * 构建最终的过滤条件字符串
+   *
+   * 使用 useMemo：
+   * - 避免在无关状态变化时重复计算
+   * - 保证返回值在依赖不变时引用稳定
+   */
   return useMemo(() => {
     const conditions: string[] = [];
 

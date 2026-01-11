@@ -11,6 +11,7 @@ const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Explore = lazy(() => import("@/pages/Explore"));
+const ToolSet = lazy(() => import("@/pages/ToolSet"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -69,6 +70,7 @@ const router = createBrowserRouter([
             ],
           },
           { path: Routes.ATTACHMENTS, element: <LazyRoute component={Attachments} /> },
+          { path: Routes.TOOLS, element: <LazyRoute component={ToolSet} /> },
           { path: Routes.INBOX, element: <LazyRoute component={Inboxes} /> },
           { path: Routes.SETTING, element: <LazyRoute component={Setting} /> },
           { path: "memos/:uid", element: <LazyRoute component={MemoDetail} /> },

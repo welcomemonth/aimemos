@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon, ToolCaseIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -40,6 +40,12 @@ const Navigation = (props: Props) => {
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto shrink-0" />,
   };
+  const toolLink: NavLinkItem = {
+    id: "header-tools",
+    path: Routes.TOOLS,
+    title: t("common.tools"),
+    icon: <ToolCaseIcon className="w-6 h-auto shrink-0" />,
+  };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
     path: Routes.ATTACHMENTS,
@@ -70,8 +76,8 @@ const Navigation = (props: Props) => {
   };
 
   const navLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
-    : [exploreNavLink, signInNavLink];
+    ? [homeNavLink, exploreNavLink, attachmentsNavLink, toolLink, inboxNavLink]
+    : [exploreNavLink, signInNavLink, toolLink];
 
   return (
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4 hide-scrollbar", className)}>
