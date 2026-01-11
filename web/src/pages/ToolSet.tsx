@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  Wrench, 
-  Code2, 
-  Layout, 
-  Settings, 
-  Search, 
+import {
+  Wrench,
+  Code2,
+  Layout,
+  Settings,
+  Search,
   ExternalLink,
   Github,
   BoxIcon,
@@ -65,7 +65,7 @@ const ToolsetPage: React.FC = () => {
       <div className="w-full px-4 sm:px-6">
         {/* 主容器：模仿 memos 的 Inbox 卡片样式 */}
         <div className="w-full border border-border flex flex-col justify-start items-start rounded-xl bg-background text-foreground overflow-hidden">
-          
+
           {/* Header 部分 */}
           <div className="w-full px-4 py-4 border-b border-border bg-card">
             <div className="flex flex-row justify-between items-center">
@@ -78,7 +78,7 @@ const ToolsetPage: React.FC = () => {
                   </span>
                 )}
               </div>
-              
+
               {/* 搜索框：整合进 Header */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -127,8 +127,8 @@ const ToolsetPage: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 divide-y divide-border">
                 {filteredTools.map((tool) => (
-                  <div 
-                    key={tool.id} 
+                  <div
+                    key={tool.id}
                     className="w-full p-4 flex flex-row justify-between items-start hover:bg-muted/40 transition-colors group"
                   >
                     <div className="flex flex-row items-start gap-3">

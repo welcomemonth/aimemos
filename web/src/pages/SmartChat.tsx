@@ -1,4 +1,4 @@
-import {  SendIcon } from "lucide-react";
+import { SendIcon } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,61 +33,60 @@ const Chat = () => {
     setIsTyping(true);
 
     try {
-        const response = await fetch("/api/v1/ai/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content: input }),
+      const response = await fetch("/api/v1/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: input }),
+      });
+
+      if (!response.body) return;
+
+      // 1. 获取读取器
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedContent = "";
+
+      // 2. 循环读取数据块
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break; // 读取完成
+
+        // 3. 解码并追加内容
+        const chunk = decoder.decode(value, { stream: true });
+        accumulatedContent += chunk;
+
+        // 4. 实时更新界面上最后一条消息的内容
+        setMessages((prev) => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = accumulatedContent;
+          return newMessages;
         });
-
-        if (!response.body) return;
-
-        // 1. 获取读取器
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let accumulatedContent = "";
-
-        // 2. 循环读取数据块
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break; // 读取完成
-
-          // 3. 解码并追加内容
-          const chunk = decoder.decode(value, { stream: true });
-          accumulatedContent += chunk;
-
-          // 4. 实时更新界面上最后一条消息的内容
-          setMessages((prev) => {
-            const newMessages = [...prev];
-            newMessages[newMessages.length - 1].content = accumulatedContent;
-            return newMessages;
-          });
-        }
-      } catch (error) {
-        console.error("AI 响应错误:", error);
-      } finally {
-        setIsTyping(false);
       }
+    } catch (error) {
+      console.error("AI 响应错误:", error);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-900">
       <MobileHeader className="AI Assistant" />
-      
+
       {/* 消息展示区 */}
-      <div 
+      <div
         ref={scrollRef}
         className="flex-grow p-4 overflow-y-auto space-y-4"
       >
         {messages.map((msg, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
-            <div className={`max-w-[80%] p-3 rounded-2xl ${
-              msg.role === "user" 
-                ? "bg-blue-600 text-white rounded-br-none" 
+            <div className={`max-w-[80%] p-3 rounded-2xl ${msg.role === "user"
+                ? "bg-blue-600 text-white rounded-br-none"
                 : "bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-bl-none"
-            }`}>
+              }`}>
               <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
             </div>
           </div>
@@ -114,8 +113,8 @@ const Chat = () => {
               }
             }}
           />
-          <Button 
-            onClick={handleSendMessage} 
+          <Button
+            onClick={handleSendMessage}
             disabled={!input.trim() || isTyping}
             className="mb-1"
           >
