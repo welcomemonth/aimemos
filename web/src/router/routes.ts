@@ -7,7 +7,7 @@ export const ROUTES = {
   EXPLORE: "/explore",
   AUTH: "/auth",
   TOOLS: "/tools",
-  AIGC: "aigc",
+  CHAT: "/chat",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
