@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -89,6 +90,7 @@ var (
 )
 
 func init() {
+	godotenv.Load()
 	viper.SetDefault("mode", "dev")
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)

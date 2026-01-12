@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
-	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/openai/openai-go/v3"
@@ -25,14 +25,12 @@ func (s *APIV1Service) CreateAIChat(c echo.Context) error {
 	req := &SmartChatRequest{}
 	if err := c.Bind(req); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid request body")
-	} else {
-		fmt.Println("req.Content= ", req.Content)
 	}
 
 	// 初始化客户端 (建议以后把 API Key 放在 s.Profile 里)
 	client := openai.NewClient(
-		option.WithBaseURL("https://ark.cn-beijing.volces.com/api/v3"),
-		option.WithAPIKey("7c176ce0-60c7-41c2-b223-0499eca8c6fa"),
+		option.WithBaseURL(os.Getenv("ARK_BASE_URL")),
+		option.WithAPIKey(os.Getenv("ARK_API_KEY")),
 	)
 
 	// 1. 设置响应头，告诉浏览器：这是一个流式输出（SSE）
