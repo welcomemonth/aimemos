@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service ChatService {
+  // 关键点：returns (stream ChatResponse)
+  rpc Chat(ChatRequest) returns (stream ChatResponse) {
+    // 添加 google.api.http 选项配置 RESTful 映射
+    option (google.api.http) = {
+      // 定义 HTTP 方法为 POST，路径为 /v1/chat
+      post: "/api/v1/chat/completions"
+      // 将 HTTP 请求体内容完全映射到 ChatRequest 消息中
+      body: "*"
+    };
+  }
+}
+
+message ChatRequest {
+  string message = 1;
+}
+
+message ChatResponse {
+  string content = 1;
+  string type = 2; // 思考内容 正式文本内容 搜索内容等等
+}
+
